@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 
 import net.minecraft.util.FormattedCharSequence;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,9 @@ public class Unipose implements ModInitializer {
 				else if(keyEvent.input() == GLFW.GLFW_KEY_BACKSPACE) {
 					deleteChar();
 				}
+				else if(keyEvent.isRight()) {
+					reset(); // keep literal string
+				}
 				else if(keyEvent.isCopy()) {
 					// copy hex value of code so far
 				}
@@ -69,6 +73,19 @@ public class Unipose implements ModInitializer {
 					target.insertText(Character.toString(Character.toLowerCase(c)));
 
 				return false;
+			});
+
+			ScreenMouseEvents.allowMouseClick(screen).register((_, mouseButtonEvent) -> {
+				if(!isComposing || target == null) return true;
+
+				if(
+						mouseButtonEvent.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT ||
+						mouseButtonEvent.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT ||
+						mouseButtonEvent.button() == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
+					reset(); // keep literal string
+					return false;
+				}
+				return true;
 			});
 		}));
 
@@ -125,6 +142,8 @@ public class Unipose implements ModInitializer {
 
 	private static void reset() {
 		isComposing = false;
+		target = null;
+		startPos = -1;
 	}
 
 	public static Identifier id(String path) {
