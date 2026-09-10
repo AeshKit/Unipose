@@ -45,7 +45,7 @@ public class Unipose implements ModInitializer {
 					stopComposing();
 				}
 				else if(keyEvent.isConfirmation()) { // enter
-					// parse
+					commitHexValue();
 				}
 				else if(keyEvent.input() == GLFW.GLFW_KEY_BACKSPACE) {
 					deleteChar();
@@ -75,17 +75,15 @@ public class Unipose implements ModInitializer {
 				return false;
 			});
 
-			ScreenMouseEvents.allowMouseClick(screen).register((_, mouseButtonEvent) -> {
-				if(!isComposing || target == null) return true;
+			ScreenMouseEvents.beforeMouseClick(screen).register((_, mouseButtonEvent) -> {
+				if(!isComposing || target == null) return;
 
 				if(
 						mouseButtonEvent.button() == GLFW.GLFW_MOUSE_BUTTON_RIGHT ||
 						mouseButtonEvent.button() == GLFW.GLFW_MOUSE_BUTTON_LEFT ||
 						mouseButtonEvent.button() == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
 					reset(); // keep literal string
-					return false;
 				}
-				return true;
 			});
 		}));
 
@@ -122,6 +120,29 @@ public class Unipose implements ModInitializer {
 	private static void stopComposing() {
 		if(target != null) target.deleteCharsToPos(startPos);
 		reset();
+	}
+
+	private static void commitHexValue() {
+		if(target == null) {
+			reset();
+			return;
+		}
+
+		final String out = parse(target.getValue().substring(startPos + 1, target.getCursorPosition()));
+		target.deleteCharsToPos(startPos);
+		target.insertText(out);
+		reset();
+	}
+
+	private static String parse(String hex) {
+		try {
+			final int codepoint = Integer.parseInt(hex, 16);
+			final boolean isLoneSurrogate = codepoint >= 0xD800 && codepoint <= 0xDFFF;
+
+			if(Character.isValidCodePoint(codepoint) && !isLoneSurrogate)
+				return new String(Character.toChars(codepoint));
+		} catch(NumberFormatException _) {}
+		return "";
 	}
 
 	private static void deleteChar() {
