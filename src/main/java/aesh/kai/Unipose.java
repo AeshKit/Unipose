@@ -35,22 +35,26 @@ public class Unipose implements ModInitializer {
 			ScreenKeyboardEvents.allowKeyPress(screen).register((thisScreen, keyEvent) -> {
 				if(!isComposing) return !isTrigger(keyEvent) || !startComposing(thisScreen);
 
-				if(keyEvent.isEscape()) {
-					// exit
-					return false;
+				if(keyEvent.isEscape() || (keyEvent.hasControlDown() && keyEvent.input() == GLFW.GLFW_KEY_BACKSPACE)) {
+					stopComposing();
 				}
-
-				if(keyEvent.isConfirmation()) { // enter
+				else if(keyEvent.isConfirmation()) { // enter
 					// parse
 				}
+				else if(keyEvent.input() == GLFW.GLFW_KEY_BACKSPACE) {
 
-				// backspace
-				// ctrl + a ?
+				}
+				else if(keyEvent.isSelectAll()) {
+					// select all after u
+				}
+				else if(keyEvent.isCopy()) {
+					// copy hex value of code so far
+				}
 
 				return false;
 			});
 
-			ScreenKeyboardEvents.allowCharType(screen).register((thisScreen, characterEvent) -> {
+			ScreenKeyboardEvents.allowCharType(screen).register((_, characterEvent) -> {
 				if(!isComposing || target == null) return true;
 
 				final int c = characterEvent.codepoint();
@@ -76,10 +80,18 @@ public class Unipose implements ModInitializer {
 		startPos = editBox.getCursorPosition();
 		isComposing = true;
 
-		editBox.setValue(editBox.getValue() + 'u' + '_');
+		editBox.setValue(insert(editBox.getValue(), startPos, "u"));
 		editBox.setCursorPosition(startPos + 1);
 		return true;
+	}
 
+	private static void stopComposing() {
+		if(target != null) {
+			int end = target.getCursorPosition();
+			target.setValue(delete(target.getValue(), startPos, end));
+			target.setCursorPosition(startPos);
+		}
+		reset();
 	}
 
 	private static boolean isTrigger(KeyEvent keyEvent) {
@@ -90,5 +102,13 @@ public class Unipose implements ModInitializer {
 
 	private static void reset() {
 		isComposing = false;
+	}
+
+	private static String delete(String s, int from, int to) {
+		return s.substring(0, from) + s.substring(to);
+	}
+
+	private static String insert(String s, int pos, String text) {
+		return s.substring(0, pos) + text + s.substring(pos);
 	}
 }
