@@ -4,11 +4,16 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 
+import net.minecraft.util.FormattedCharSequence;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +64,11 @@ public class Unipose implements ModInitializer {
 						(c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
 
 				final int hexDigits = target.getCursorPosition() - startPos - 1;
-				return isHexDigit && hexDigits < MAX_UNICODE_HEX_DIGITS;
+
+				if(isHexDigit && hexDigits < MAX_UNICODE_HEX_DIGITS)
+					target.insertText(Character.toString(Character.toLowerCase(c)));
+
+				return false;
 			});
 		}));
 
@@ -74,7 +83,23 @@ public class Unipose implements ModInitializer {
 		isComposing = true;
 
 		editBox.insertText("u");
-		editBox.setCursorPosition(startPos + 1);
+
+		editBox.addFormatter((s, firstChar) -> {
+			if(!isComposing) return FormattedCharSequence.forward(s, Style.EMPTY);
+
+			final int start = Math.max(0, startPos - firstChar);
+			final int end = Math.max(0, target.getCursorPosition() - firstChar);
+
+			final String textBefore = s.substring(0, start);
+			final String hexCode = s.substring(start, end);
+			final String textAfter = s.substring(end);
+
+			return Component.literal(textBefore)
+					.append(Component.literal(hexCode).withStyle(ChatFormatting.UNDERLINE))
+					.append(Component.literal(textAfter))
+					.getVisualOrderText();
+		});
+
 		return true;
 	}
 
