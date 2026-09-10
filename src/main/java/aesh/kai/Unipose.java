@@ -13,8 +13,6 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static aesh.kai.utils.StringUtils.*;
-
 public class Unipose implements ModInitializer {
 	public static final String MOD_ID = "unipose";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
@@ -44,10 +42,7 @@ public class Unipose implements ModInitializer {
 					// parse
 				}
 				else if(keyEvent.input() == GLFW.GLFW_KEY_BACKSPACE) {
-
-				}
-				else if(keyEvent.isSelectAll()) {
-					// select all after u
+					deleteChar();
 				}
 				else if(keyEvent.isCopy()) {
 					// copy hex value of code so far
@@ -78,18 +73,29 @@ public class Unipose implements ModInitializer {
 		startPos = editBox.getCursorPosition();
 		isComposing = true;
 
-		editBox.setValue(insert(editBox.getValue(), startPos, "u"));
+		editBox.insertText("u");
 		editBox.setCursorPosition(startPos + 1);
 		return true;
 	}
 
 	private static void stopComposing() {
-		if(target != null) {
-			int end = target.getCursorPosition();
-			target.setValue(delete(target.getValue(), startPos, end));
-			target.setCursorPosition(startPos);
-		}
+		if(target != null) target.deleteCharsToPos(startPos);
 		reset();
+	}
+
+	private static void deleteChar() {
+		if(target.getCursorPosition() == startPos + 1) {
+			stopComposing();
+			return;
+		}
+
+		target.deleteCharsToPos(target.getCursorPosition() - 1);
+	}
+
+	private static boolean isTrigger(KeyEvent keyEvent) {
+		return keyEvent.key() == GLFW.GLFW_KEY_U
+				&& keyEvent.hasControlDown()
+				&& keyEvent.hasShiftDown();
 	}
 
 	private static void reset() {
