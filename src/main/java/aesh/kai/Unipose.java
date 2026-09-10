@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
@@ -14,7 +15,6 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 
 import net.minecraft.util.FormattedCharSequence;
-import org.jspecify.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,8 +23,8 @@ public class Unipose implements ModInitializer {
 	public static final String MOD_ID = "unipose";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-	// 0x10FFFF as highest valid Unicode hex
-	public static final int MAX_UNICODE_HEX_DIGITS = 6;
+	// 8 for parity, even though 0x10FFFF is the biggest value
+	public static final int MAX_UNICODE_HEX_DIGITS = 8;
 
 	private static boolean isComposing = false;
 	private static EditBox target = null;
@@ -40,24 +40,7 @@ public class Unipose implements ModInitializer {
 			// I.E. whether we want vanilla logic to dictate the key press
 			ScreenKeyboardEvents.allowKeyPress(screen).register((thisScreen, keyEvent) -> {
 				if(!isComposing) return !isTrigger(keyEvent) || !startComposing(thisScreen);
-
-				if(keyEvent.isEscape() || (keyEvent.hasControlDown() && keyEvent.input() == GLFW.GLFW_KEY_BACKSPACE)) {
-					stopComposing();
-				}
-				else if(keyEvent.isConfirmation()) { // enter
-					commitHexValue();
-				}
-				else if(keyEvent.input() == GLFW.GLFW_KEY_BACKSPACE) {
-					deleteChar();
-				}
-				else if(keyEvent.isRight()) {
-					reset(); // keep literal string
-				}
-				else if(keyEvent.isCopy()) {
-					// copy hex value of code so far
-				}
-
-				return false;
+				return handleKeyEvent(keyEvent);
 			});
 
 			ScreenKeyboardEvents.allowCharType(screen).register((_, characterEvent) -> {
@@ -88,6 +71,49 @@ public class Unipose implements ModInitializer {
 		}));
 
 		LOGGER.info("Unipose [ Unicode Composition ] init");
+	}
+
+	private static boolean handleKeyEvent(KeyEvent keyEvent) {
+		if(keyEvent.isEscape() || (keyEvent.hasControlDown() && keyEvent.key() == GLFW.GLFW_KEY_BACKSPACE)) {
+			stopComposing();
+			return false;
+		}
+
+		// confirmation = enter
+		if(keyEvent.isConfirmation() || keyEvent.key() == GLFW.GLFW_KEY_SPACE) {
+			commitHexValue();
+			return false;
+		}
+
+		if(keyEvent.key() == GLFW.GLFW_KEY_BACKSPACE) {
+			deleteChar();
+			return false;
+		}
+
+		if(keyEvent.isRight()) {
+			reset();
+			return false;
+		}
+
+		if(keyEvent.isCopy()) {
+			if (target != null) {
+				String hex = target.getValue().substring(startPos + 1, target.getCursorPosition());
+				Minecraft.getInstance().keyboardHandler.setClipboard(parse(hex));
+			}
+			return false;
+		}
+
+		if(keyEvent.isPaste()) {
+			if (target != null) stopComposing();
+			return true;
+		}
+
+		if(keyEvent.isSelectAll()) {
+			reset();
+			return true;
+		}
+
+		return false;
 	}
 
 	private static boolean startComposing(Screen screen) {
