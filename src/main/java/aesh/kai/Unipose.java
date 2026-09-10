@@ -13,6 +13,8 @@ import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static aesh.kai.utils.StringUtils.*;
+
 public class Unipose implements ModInitializer {
 	public static final String MOD_ID = "unipose";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
@@ -69,10 +71,6 @@ public class Unipose implements ModInitializer {
 		LOGGER.info("Unipose [ Unicode Composition ] init");
 	}
 
-	public static Identifier id(String path) {
-		return Identifier.fromNamespaceAndPath(MOD_ID, path);
-	}
-
 	private static boolean startComposing(Screen screen) {
 		if(!(screen.getFocused() instanceof EditBox editBox)) return false;
 
@@ -94,21 +92,11 @@ public class Unipose implements ModInitializer {
 		reset();
 	}
 
-	private static boolean isTrigger(KeyEvent keyEvent) {
-		return keyEvent.key() == GLFW.GLFW_KEY_U
-				&& keyEvent.hasControlDown()
-				&& keyEvent.hasShiftDown();
-	}
-
 	private static void reset() {
 		isComposing = false;
 	}
 
-	private static String delete(String s, int from, int to) {
-		return s.substring(0, from) + s.substring(to);
-	}
-
-	private static String insert(String s, int pos, String text) {
-		return s.substring(0, pos) + text + s.substring(pos);
+	public static Identifier id(String path) {
+		return Identifier.fromNamespaceAndPath(MOD_ID, path);
 	}
 }
