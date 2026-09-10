@@ -8,10 +8,10 @@
 		"KaidenKraft"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/AeshKit/Unipose",
+		"sources": "https://github.com/AeshKit/Unipose"
 	},
-	"license": "CC0-1.0",
+	"license": "GPL-2.0",
 	"icon": "assets/unipose/icon.png",
 	"environment": "*",
 	"entrypoints": {
