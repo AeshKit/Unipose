@@ -96,16 +96,15 @@ public class Unipose implements ModInitializer {
 		if(!(screen.getFocused() instanceof EditBox editBox)) return false;
 
 		target = editBox;
-		startPos = editBox.getCursorPosition();
 		isComposing = true;
-
 		editBox.insertText("u");
+		startPos = editBox.getCursorPosition() - 1;
 
 		editBox.addFormatter((s, firstChar) -> {
 			if(!isComposing) return FormattedCharSequence.forward(s, Style.EMPTY);
 
-			final int start = Math.max(0, startPos - firstChar);
-			final int end = Math.max(0, target.getCursorPosition() - firstChar);
+			final int start = Math.clamp(startPos - firstChar, 0, s.length());
+			final int end = Math.clamp(target.getCursorPosition() - firstChar, 0, s.length());
 
 			final String textBefore = s.substring(0, start);
 			final String hexCode = s.substring(start, end);
