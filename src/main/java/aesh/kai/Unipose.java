@@ -96,7 +96,7 @@ public class Unipose implements ModInitializer {
 		}
 
 		if(keyEvent.isCopy()) {
-			if (target != null) {
+			if(target != null) {
 				String hex = target.getValue().substring(startPos + 1, target.getCursorPosition());
 				Minecraft.getInstance().keyboardHandler.setClipboard(parse(hex));
 			}
@@ -104,7 +104,7 @@ public class Unipose implements ModInitializer {
 		}
 
 		if(keyEvent.isPaste()) {
-			if (target != null) stopComposing();
+			if(target != null) stopComposing();
 			return true;
 		}
 
