@@ -3,7 +3,7 @@
 	"id": "unipose",
 	"version": "${version}",
 	"name": "Unipose",
-	"description": "Allows for UNIX & MacOS Unicode Composition in Minecraft.",
+	"description": "Allows for Linux Unicode composition in Minecraft.",
 	"authors": [
 		"KaidenKraft"
 	],

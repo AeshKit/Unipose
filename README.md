@@ -1,3 +1,10 @@
+<p align="left">
+  <img 
+    src="https://raw.githubusercontent.com/AeshKit/Unipose/gallery/iconBig.png"
+    width="260"
+    style="image-rendering: pixelated;">
+</p>
+
 # Unipose
 
 Linux unicode composition in minecraft
@@ -6,7 +13,7 @@ This works on any OS, not just Linux
 
 ## What ?
 
-So you know how you can do ctrl+shift+u in Linux to specify a UTF hex code ? Very fun for troling the hell out of your programming buddies if you've memorized the lookalike codes:
+So you know how you can do ctrl+shift+u in Linux to specify a UTF hex code ? Very fun for troling the hell out of your programming buddies if you've memorized the lookalikesː
 
 ![Putting u2d0 in place of ':'](https://raw.githubusercontent.com/AeshKit/Unipose/gallery/Screenshot_20260910_192402.png)
 ![Wow, unreadable error](https://raw.githubusercontent.com/AeshKit/Unipose/gallery/Screenshot_20260910_192500.png)
