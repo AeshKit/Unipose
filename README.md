@@ -1,8 +1,6 @@
 # Unipose
 
-## Hey
-
-it ain't done yet I'm just pushing edits to github as I go. Currently public cause I'm not high-profile and don't have much to worry about.
+This branch stores the images used in the main readme. Code here is not updated since before the first version.
 
 ## License
 
