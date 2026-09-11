@@ -81,12 +81,13 @@ public class Unipose implements ModInitializer {
 
 		// confirmation = enter
 		if(keyEvent.isConfirmation() || keyEvent.key() == GLFW.GLFW_KEY_SPACE) {
-			commitHexValue();
+			if(target != null) commitHexValue();
 			return false;
 		}
 
 		if(keyEvent.key() == GLFW.GLFW_KEY_BACKSPACE) {
-			deleteChar();
+			if(target != null)
+				deleteChar();
 			return false;
 		}
 
@@ -104,7 +105,7 @@ public class Unipose implements ModInitializer {
 		}
 
 		if(keyEvent.isPaste()) {
-			if(target != null) stopComposing();
+			if(target != null) commitHexValue();
 			return true;
 		}
 
