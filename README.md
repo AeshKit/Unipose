@@ -30,9 +30,9 @@ I'll add more features, like a preview and config if this mod gets any traction.
 
 ## Installation
 
-Grab the latest jar from [releases](https://github.com/AeshKit/Unipose/releases), and put it into your /mods/ folder. Once approved, this mod will also be available on Modrinth and Curseforge.
+Grab the latest jar from [releases](https://github.com/AeshKit/Unipose/releases), and put it into your /mods/ folder. Once approved, this mod will also be available on Modrinth.
 
-This mod only depends on Fabric API.
+You can also get this mod on [Curseforge](https://www.curseforge.com/minecraft/mc-mods/unipose), if that's your thing
 
 ## License
 
