@@ -32,7 +32,7 @@ I'll add more features, like a preview and config if this mod gets any traction.
 
 Grab the latest jar from [releases](https://github.com/AeshKit/Unipose/releases), and put it into your /mods/ folder. Once approved, this mod will also be available on Modrinth and Curseforge.
 
-This mod only depends on Fabric API. Besides that, there are no dependencies [ yet ].
+This mod only depends on Fabric API.
 
 ## License
 
