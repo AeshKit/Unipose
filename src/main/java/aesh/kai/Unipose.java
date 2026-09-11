@@ -96,6 +96,15 @@ public class Unipose implements ModInitializer {
 			return false;
 		}
 
+		if(keyEvent.isCut()) {
+			if(target != null) {
+				String hex = target.getValue().substring(startPos + 1, target.getCursorPosition());
+				Minecraft.getInstance().keyboardHandler.setClipboard(parse(hex));
+			}
+			stopComposing();
+			return false;
+		}
+
 		if(keyEvent.isCopy()) {
 			if(target != null) {
 				String hex = target.getValue().substring(startPos + 1, target.getCursorPosition());
